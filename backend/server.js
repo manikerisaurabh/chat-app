@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.route.js';
 import connectToMongoDB from './db/connectToMongoDB.js';
 import messageRoutes from './routes/message.route.js';
+import userRoute from './routes/user.route.js';
 
 const app = express();
 dotenv.config();
@@ -14,6 +15,7 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/users", userRoute);
 
 app.get("/", (req, res) => {
     res.send("root route");
