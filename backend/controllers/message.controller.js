@@ -2,6 +2,8 @@ import mongoose from 'mongoose';
 
 import Conversation from '../models/conversation.model.js';
 import Message from '../models/message.model.js';
+import { getReceiverSocketid } from '../socket/socket.js';
+import { io } from '../socket/socket.js'
 export const sendMessage = async (req, res) => {
     try {
         let { id: receiverId } = req.params;
@@ -29,11 +31,17 @@ export const sendMessage = async (req, res) => {
 
             conversatoin.messages.push(newMessage._id);
         };
+        await Promise.all([newMessage.save(), conversatoin.save()]); //optimized way to save multiple collection at a time
+
+        //socket.io functionality
+        const receiverSocketId = getReceiverSocketid(receiverId);
+        if (receiverSocketId) {
+            io.to(receiverSocketId).emit("newMessage", newMessage)
+        }
 
         // await newMessage.save();
         // await conversatoin.save();
 
-        await Promise.all([newMessage.save(), conversatoin.save()]); //optimized way to save multiple collection at a time
         res.status(201).json(newMessage);
     } catch (error) {
         console.log("Error in sendMessage controller : " + error.message);
