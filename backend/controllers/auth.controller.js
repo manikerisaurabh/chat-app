@@ -23,7 +23,7 @@ export const signup = async (req, res) => {
 
 
         const boyProfilepic = `https://avatar.iran.liara.run/public/boy?username=${username}`;
-        const gitlProfilepic = `https://avatar.iran.liara.run/public/boy?username=${username}`;
+        const gitlProfilepic = `https://avatar.iran.liara.run/public/girl?username=${username}`;
 
         const newUser = new User({
             fullName: fullName,
@@ -59,6 +59,10 @@ export const login = async (req, res) => {
     try {
         const { username, password } = req.body;
         let user = await User.findOne({ username });
+
+        if (!user) {
+            return res.status(400).json({ error: "invalid username or password" })
+        }
         let isPasswordCorrect = await bcrypt.compare(password, user.password || "");
 
         if (!user || !isPasswordCorrect) {
