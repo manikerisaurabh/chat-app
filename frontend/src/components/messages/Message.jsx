@@ -1,6 +1,12 @@
 import React from 'react'
+import useGetMessages from '../../hooks/useGetMessages'
 
 const Message = () => {
+    const { messages, loading } = useGetMessages();
+    console.log("MESSAGES : ")
+    messages.map((mes) => {
+        console.log(mes?.message)
+    })
     return (
         <div className='chat chat-end'>
             <div className='chat-image avatar'>
