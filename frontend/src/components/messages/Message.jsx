@@ -1,23 +1,36 @@
 import React from 'react'
 import useGetMessages from '../../hooks/useGetMessages'
+import { useAuthContext } from '../../context/AuthContext'
+import useConversation from '../../zustand/useConversation';
+import { extractTime } from '../../utils/extractTime';
+const Message = ({ message }) => {
+    const { authUser } = useAuthContext();
+    const { selectedConversation } = useConversation();
 
-const Message = () => {
+    const fromMe = message.senderId === authUser._id;
+    const chatClassName = fromMe ? 'chat-end' : 'chat-start';
+    const formatedTime = extractTime(message.createdAt);
+    const profilePic = fromMe ? authUser.profilepic : selectedConversation.profilepic;
+    //console.log("this is profile pic " + authUser)
+    const bubbleBgColor = fromMe ? 'bg-blue-500' : '';//bg-gray-500
     const { messages, loading } = useGetMessages();
-    console.log("MESSAGES : ")
-    messages.map((mes) => {
-        console.log(mes?.message)
-    })
+    // console.log("MESSAGES : ")
+    // messages.map((mes) => {
+    //     console.log(mes?.message)
+    // })
     return (
-        <div className='chat chat-end'>
+        <div className={`chat ${chatClassName}`}>
             <div className='chat-image avatar'>
                 <div className='w-10 rounded-full'>
-                    <img src="https://avatar.iran.liara.run/public/boy?username=butki" alt="user avatar" />
+                    <img src={`${profilePic}`} alt="user avatar" />
                 </div>
             </div>
-            <div className='chat-bubble text-white bg-blue-500'>
-                Heyy.. Whats up??
+            <div className={`chat-bubble text-white ${bubbleBgColor} pb-2`}>
+                {message.message}
             </div>
-            <div className='chat-footer opacity-50 text-xs flex gap-1 items-center'>12:42</div>
+            <div className='chat-footer opacity-50 text-xs flex gap-1 items-center'>
+                {formatedTime}
+            </div>
         </div>
     )
 }
